@@ -1,0 +1,156 @@
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			.naver{
+				position: relative;
+   				 z-index: 1000;
+   				 height: 70px;
+   				 box-sizing: border-box;
+    			background: #242424;
+    			border-bottom: 1px solid #000;
+			}
+			.naver ul{
+				list-style: none;
+				height: 100%;
+				width: 100%;
+			}
+			.naver li{
+				float: left;
+				height: 100%;
+				width: 25%;
+				text-align: center;
+				font: 22px/70px "微软雅黑" ;
+			}
+			.naver a{
+				color: white;
+			}
+			.content{
+			    position: absolute;
+         		left: 0;
+    			top: 0;
+    			width: 100%;
+   				height: 100%;
+    			border: 0;
+			}
+			.h5back{
+				width: 100%;
+				height: 789px;
+				background-image:url(../img/h5backpto.png) ;
+				background-size: 100% 100%;
+				background-repeat: no-repeat; 
+				margin: auto;
+				position: relative;
+			}
+			.music {
+				position: fixed;
+				width: 400px;
+				height: 70px;
+				left: 457px;
+				top: 72%;
+				opacity: 0.5;
+				background-color: skyblue;
+			}
+			.play{
+				background: url(../img/play.png);
+				background-size: 100%;
+				width: 70px;
+				height: 70px;
+				float: left;
+			}
+			.pause{
+				background: url(../img/pas.png);
+				background-size: 100%;
+				width: 70px;
+				height: 70px;
+				float: left;
+				}
+				.pre{
+					background: url(../img/pre.png);
+				background-size: 100%;
+				width: 70px;
+				height: 70px;
+				float: left;
+				}
+				.next{
+					background: url(../img/next.png);
+				background-size: 100%;
+				width: 70px;
+				height: 70px;
+				float: left;
+				}
+				.hide{
+					background-image: url(../img/icon.png);
+					position: fixed;
+					width: 45px;
+					height: 45px;
+					background-size: 100% 100%;
+					background-repeat: no-repeat;
+					left: 386px;
+					top: 75%;
+				}
+				#outer{
+				width: 650px;
+				height: 200px;
+				padding:10px 0;
+				position: absolute;
+				left: 386px;
+				top: 264px;
+				overflow: hidden;
+				}
+				#contentlist{
+    			position: absolute;			
+				list-style: none;
+				}
+				#contentlist li{
+					margin-left: 10px;
+					float: left;
+					opacity: 0.6;
+					position: relative;
+				}
+				.clearfix:before,.clearfix:after{
+		 		content: "";
+		 		display: table;
+		 		clear: both;
+				}
+				.clicked{
+					border: solid white 1px;
+				}
+				.musicscroll{
+					background-color: yellow;
+					width: 650px;
+					height: 10px;
+					position:absolute ;
+					left: 386px;
+					top: 488px;
+					border: solid red 1px;
+					overflow: hidden;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-name: breathe;
+    -webkit-animation-duration: 1500ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-direction: alternate;
+				}
+				@-webkit-keyframes breathe {
+    0% {
+        opacity: .4;
+        box-shadow: 0 1px 2px rgba(0, 147, 223, 0.4), 0 1px 1px rgba(0, 147, 223, 0.1) inset;
+    }
+
+    100% {
+        opacity: 1;
+        border: 1px solid rgba(59, 235, 235, 0.7);
+        box-shadow: 0 1px 30px #0093df, 0 1px 20px #0093df inset;
+    }
+}
+				.move{
+					width: 10px;
+					height: 10px;
+					background-color: red;
+					position: absolute;
+				}
+ li img{
+ 	height: 200px;
+ 	width: 200px;
+  
+  }

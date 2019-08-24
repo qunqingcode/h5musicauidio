@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/css1.css"/>
+	</head>
+	<script src="js/jquery-3.4.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		
+		$(function () {
+			var musicarr=[];	
+			var listid;
+			var timer;
+			var rotatimer;
+			var time=0;
+			var musicplay=$("audio")[0];
+			console.log(musicarr)
+				$("#contentlist li").click(function () {
+					musicarr=[];
+				i=0;
+				kind=$(this).prop("id")
+				var reg =/(clicked)/
+			if(!reg.test(this.className)){
+				$(this).addClass("clicked")
+				$(this).animate({top:'50px'})
+			}else{
+				$(this).removeClass("clicked")
+				$(this).animate({top:'0px'})
+			}
+				//使用not方法遍历除了括号中的其他元素，进行操作
+				$("#contentlist li").not(this).removeClass("clicked")
+				$("#contentlist li").not(this).animate({top:'0px'})
+				if($(this).prop("id")=="red"){
+						listid =2510110702;
+				}else if($(this).prop("id")=="blue"){
+						listid=	2088799380;
+				 }else{
+				 	listid=2503202287;
+				 	}
+				 console.log(listid)
+				 if(listid){
+				 	
+				  $.ajax({
+				type:"get",
+				url:"https://v1.itooi.cn/netease/songList",
+				async:true,
+				data:{id: listid},//data参数传过去就会将其拼串进去执行 ?id= XXX格式 //请求参数
+				success:function (data) {
+					console.log(data)
+					for (var index=0;index<data.data.tracks.length;index++) {
+						console.log(typeof data)
+						var list={
+						imgsrc: "",
+						musicsrc: ""
+						}//动态创建对象添加到数组，不能在全局定义，否则会直接将最后一个index的对象推入length次
+							list.imgsrc=data.data.tracks[index].album.picUrl
+							list.musicsrc="https://v1.itooi.cn/netease/url?id="+data.data.tracks[index].id +"&quality=flac";
+						musicarr.push(list);
+					}//data是服务器返回的数据
+				musicpictures()	
+				},//成功时的回调函数
+					error:function(){
+						alert("出错了")
+					},//失败时的回调函数
+					dataType:"json"//设置接收到的响应数据的格式
+			});
+				
+				}
+			})
+			
+			var musicred;
+			var musicblue;
+			var musicyellow;
+			var i;
+			$(".play").click(function () {
+				i=0
+				if(!musicarr){alert("请选取歌单")}
+				$("audio").prop("src",musicarr[i].musicsrc)
+				musicplay.play();
+				musicname(musicplay);
+				autochange ();
+				divmove();
+				setInterval(function () {
+				timescroll()
+			},1000)
+				round()
+				musicpictures()
+			})
+			$(".pause").click(function () {
+				musicplay.pause();
+				clearInterval(timer);
+				clearInterval(rotatimer)
+				musicpictures()
+			})
+			$(".hide").click(function () {
+				$(".music").slideToggle()
+			})
+			
+			$(".next").click(function () {
+				nextmusic(musicarr)
+				musicname(musicplay)
+				autochange ()
+				round()
+				musicpictures()
+			})
+			$(".pre").click(function () {
+				premusic(musicarr)
+				musicname(musicplay)
+				autochange ()
+				round()
+				musicpictures()
+			})
+		
+			
+			var move =$(".move")[0]
+			$(".musicscroll").click(function (event) {
+			var timedis =event.clientX-$(".musicscroll")[0].offsetLeft;
+			 move.style.left  =	 timedis+"px";
+			 musicplay.currentTime= (timedis/parseInt( $(".musicscroll").css("width")))*musicplay.duration
+			})
+			//从接口获取音乐
+			function getmusic(obj){
+			}
+			//专辑图切换
+			function musicpictures () {
+					if (musicarr[i].imgsrc) {
+							$(".clicked").children().prop("src",musicarr[i].imgsrc)	
+					
+					}else if($(".clicked").prop("id")=="red"){
+						$(".clicked").children().prop("src","img/box1.jpg")	
+				
+					}else if($(".clicked").prop("id")=="blue"){
+						$(".clicked").children().prop("src","img/box2.jpg")	
+					}else{
+						$(".clicked").children().prop("src","img/box3.jpg")	
+						
+					}
+			}
+			//旋转函数
+			function round () {
+				clearInterval(rotatimer)
+				var rotateVal =10
+				rotatimer=setInterval(function () {
+					$(".hide").css("transform",'rotate(' + rotateVal + 'deg)')
+					rotateVal+=10
+				},100)
+			}
+			//时间显示
+			function timescroll () {
+				$(".timescroll").text(Math.floor(musicplay.currentTime)+"/"+ Math.floor(musicplay.duration))
+			}
+			//下一首
+			function nextmusic(music) {
+				i++;
+				if(i==musicarr.length){i=0}
+				$("audio").prop("src",musicarr[i].musicsrc)
+					musicplay.play();
+			}
+			//上一首
+			function premusic(music) {
+				i--;
+				if(i<0){i=musicarr.length-1}
+				$("audio").prop("src",musicarr[i].musicsrc)
+					musicplay.play();
+				}
+			//当前播放歌曲名
+			function musicname(music){
+				$(".musicname").text(musicplay.src.split("/mp3/")[1])
+				
+			}
+			//播放完自动切换下一首
+			function autochange () {
+				setInterval(function () {
+					 if(musicplay.currentTime>=musicplay.duration-1)//片尾跳转下一曲
+                    {
+                    	nextmusic(musicplay)
+                        musicpictures()
+                        musicname(musicplay)
+                    }
+				},100)
+				}
+			function divmove () {
+					setInterval(function () {
+				var mov=	musicplay.currentTime/musicplay.duration
+				var movedis= mov*$(".musicscroll").width()
+				$(".move").css("left",movedis+ "px")
+				},1000)
+			}
+			
+		})
+			
+                      
+	</script>
+	<body >
+		<div class="h5back" >
+		<div class="music">
+		<button class="play"></button>
+		<button class="pause"></button>
+		<button class="pre"></button>
+		<button class="next"></button>
+		<p class="musicname"></p>
+		<p class="timescroll"></p>
+		<audio src="">
+		Your browser does not support the audio element.
+		</audio>
+		
+		</div>
+		<div class="hide"></div>
+			
+		<div id="outer" >
+ 		<ul  id="contentlist">
+				<li id="red"><img src="img/box1.jpg"/></li>
+				<li id="blue"><img src="img/box2.jpg"/></li>
+				<li id="yellow"><img src="img/box3.jpg"/></li>
+			</ul>
+				</div>
+				<div class="musicscroll">
+				<div class="move">
+					
+				</div>
+				</div>
+ 		</div>
+ 			
+ 		
+		
+	</body>
+</html>
