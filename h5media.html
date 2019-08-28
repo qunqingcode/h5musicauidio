@@ -37,27 +37,26 @@
 				}else if($(this).prop("id")=="blue"){
 						listid=	66659453;
 				 }else if($(this).prop("id")=="yellow"){
-				 	listid=66659453;
+				 	listid=741081118;
 				 	}
 				 if(listid){
 				  $.ajax({
 				type:"get",
-				url:"https://v1.itooi.cn/netease/songList	",
+				url:"https://api.imjad.cn/cloudmusic/?type=playlist	",
 				async:true,
 				data:{id: listid},//data参数传过去就会将其拼串进去执行 ?id= XXX格式 //请求参数
 				success:function (data) {
-					for (var index=0;index<data.data.tracks.length;index++) {
+					for (var index=0;index<data.playlist.trackCount;index++) {
 						var list={
 						imgsrc: "",
 						musicsrc: ""
 						}//动态创建对象添加到数组，不能在全局定义，否则会直接将最后一个index的对象推入length次
-							list.imgsrc=data.data.tracks[index].album.picUrl
-							list.musicsrc=data.data.tracks[index].id ;
+						list.musicsrc=data.playlist.trackIds[index].id ;
 						musicarr.push(list);
-						songid.push(data.data.tracks[index].id)
+						songid.push(data.playlist.trackIds[index].id)
 					}//data是服务器返回的数据
-				musicpictures()	
 				musicname()
+				musicpictures()	
 				 if(!data){alert("获取歌单失败")}
 				},//成功时的回调函数
 					error:function(){
@@ -75,7 +74,6 @@
 			
 			$(".play").click(function () {
 				if(!musicarr[i]){alert("请选取歌单")}
-				musicname();
 				getmusic();
 				autochange ();
 				divmove();
@@ -83,13 +81,13 @@
 				timescroll()
 			},1000)
 				round()
-				musicpictures()
+			
 			})
 			$(".pause").click(function () {
 				musicplay.pause();
 				clearInterval(timer);
 				clearInterval(rotatimer)
-				musicpictures()
+				
 			})
 			$(".hide").click(function () {
 				$(".music").slideToggle()
@@ -99,13 +97,13 @@
 				nextmusic(musicarr)
 				autochange ()
 				round()
-				musicpictures()
+				
 			})
 			$(".pre").click(function () {
 				premusic(musicarr)
 				autochange ()
 				round()
-				musicpictures()
+				
 			})
 		
 			
@@ -135,7 +133,6 @@
 				async:true,
 				data:{id: musicarr[i].musicsrc},//data参数传过去就会将其拼串进去执行 ?id= XXX格式 //请求参数
 				success:function (data) {
-					console.log(data)
 					musicplay.src=data.data[0].url;
 					musicplay.play();
 					},//data是服务器返回的数据
@@ -145,6 +142,7 @@
 					},//失败时的回调函数
 					dataType:"json"//设置接收到的响应数据的格式
 			});
+				musicname()
 			}
 			//专辑图切换
 			function musicpictures () {
@@ -179,17 +177,15 @@
 				i++;
 				if(i==musicarr.length){i=0}
 				getmusic()
-				musicname()
 			}
 			//上一首
 			function premusic(music) {
 				i--;
 				if(i<0){i=musicarr.length-1}
 				getmusic()
-				musicname()
 				}
 			
-			//当前播放歌曲名
+			//当前播放歌曲详情
 			function musicname(music){
 				$.ajax({
 					type:"get",
@@ -197,7 +193,9 @@
 					async:true,
 					data:{id : songid[i]},
 					success : function(data){
+					musicarr[i].imgsrc=data.songs[0].al.picUrl
 					$(".musicname").text(data.songs[0].name+"-"+data.songs[0].ar[0].name)	
+					musicpictures()
 					}
 				});
 				
