@@ -19,6 +19,7 @@
 			var musicplay=$("audio")[0];
 				$("#contentlist li").click(function () {
 					musicarr=[];
+					songid=[];
 				i=0;
 				var reg =/(clicked)/
 			if(!reg.test(this.className)){
@@ -35,11 +36,10 @@
 						listid =2949097758;
 				}else if($(this).prop("id")=="blue"){
 						listid=	66659453;
-				 }else{
-				 	listid=2088799380;
+				 }else if($(this).prop("id")=="yellow"){
+				 	listid=66659453;
 				 	}
 				 if(listid){
-				 	
 				  $.ajax({
 				type:"get",
 				url:"https://v1.itooi.cn/netease/songList	",
@@ -52,13 +52,12 @@
 						musicsrc: ""
 						}//动态创建对象添加到数组，不能在全局定义，否则会直接将最后一个index的对象推入length次
 							list.imgsrc=data.data.tracks[index].album.picUrl
-							list.musicsrc="https://v1.itooi.cn/netease/url?id="+data.data.tracks[index].id +"&quality=flac";
+							list.musicsrc=data.data.tracks[index].id ;
 						musicarr.push(list);
 						songid.push(data.data.tracks[index].id)
 					}//data是服务器返回的数据
 				musicpictures()	
 				musicname()
-				 musicplay.src=musicarr[i].musicsrc;
 				 if(!data){alert("获取歌单失败")}
 				},//成功时的回调函数
 					error:function(){
@@ -76,8 +75,8 @@
 			
 			$(".play").click(function () {
 				if(!musicarr[i]){alert("请选取歌单")}
-				musicplay.play();
-				musicname(musicplay);
+				musicname();
+				getmusic();
 				autochange ();
 				divmove();
 				setInterval(function () {
@@ -98,14 +97,12 @@
 			
 			$(".next").click(function () {
 				nextmusic(musicarr)
-				musicname(musicplay)
 				autochange ()
 				round()
 				musicpictures()
 			})
 			$(".pre").click(function () {
 				premusic(musicarr)
-				musicname(musicplay)
 				autochange ()
 				round()
 				musicpictures()
@@ -131,7 +128,23 @@
 			})
 			
 			//从接口获取音乐
-			function getmusic(obj){
+			function getmusic(){
+				 $.ajax({
+				type:"get",
+				url:"https://api.imjad.cn/cloudmusic/?type=?	",
+				async:true,
+				data:{id: musicarr[i].musicsrc},//data参数传过去就会将其拼串进去执行 ?id= XXX格式 //请求参数
+				success:function (data) {
+					console.log(data)
+					musicplay.src=data.data[0].url;
+					musicplay.play();
+					},//data是服务器返回的数据
+						//成功时的回调函数
+					error:function(){
+						alert("出错了")
+					},//失败时的回调函数
+					dataType:"json"//设置接收到的响应数据的格式
+			});
 			}
 			//专辑图切换
 			function musicpictures () {
@@ -165,27 +178,26 @@
 			function nextmusic(music) {
 				i++;
 				if(i==musicarr.length){i=0}
-				$("audio").prop("src",musicarr[i].musicsrc)
-					musicplay.play();
+				getmusic()
+				musicname()
 			}
 			//上一首
 			function premusic(music) {
 				i--;
 				if(i<0){i=musicarr.length-1}
-				$("audio").prop("src",musicarr[i].musicsrc)
-					musicplay.play();
+				getmusic()
+				musicname()
 				}
 			
 			//当前播放歌曲名
 			function musicname(music){
 				$.ajax({
 					type:"get",
-					url:"https://v1.itooi.cn/netease/song",
+					url:"https://api.imjad.cn/cloudmusic/?type=detail",
 					async:true,
 					data:{id : songid[i]},
 					success : function(data){
-					$(".musicname").text(data.data.songs[0].name+"-"+data.data.songs[0].ar[0].name)	
-					console.log(data)
+					$(".musicname").text(data.songs[0].name+"-"+data.songs[0].ar[0].name)	
 					}
 				});
 				
