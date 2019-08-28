@@ -10,16 +10,16 @@
 		
 		$(function () {
 			var musicarr=[];	
+			var i;
 			var listid;
+			var songid=[];
 			var timer;
 			var rotatimer;
 			var time=0;
 			var musicplay=$("audio")[0];
-			console.log(musicarr)
 				$("#contentlist li").click(function () {
 					musicarr=[];
 				i=0;
-				kind=$(this).prop("id")
 				var reg =/(clicked)/
 			if(!reg.test(this.className)){
 				$(this).addClass("clicked")
@@ -32,24 +32,21 @@
 				$("#contentlist li").not(this).removeClass("clicked")
 				$("#contentlist li").not(this).animate({top:'0px'})
 				if($(this).prop("id")=="red"){
-						listid =2510110702;
+						listid =2949097758;
 				}else if($(this).prop("id")=="blue"){
-						listid=	2088799380;
+						listid=	66659453;
 				 }else{
-				 	listid=2503202287;
+				 	listid=2088799380;
 				 	}
-				 console.log(listid)
 				 if(listid){
 				 	
 				  $.ajax({
 				type:"get",
-				url:"https://v1.itooi.cn/netease/songList",
+				url:"https://v1.itooi.cn/netease/songList	",
 				async:true,
 				data:{id: listid},//data参数传过去就会将其拼串进去执行 ?id= XXX格式 //请求参数
 				success:function (data) {
-					console.log(data)
 					for (var index=0;index<data.data.tracks.length;index++) {
-						console.log(typeof data)
 						var list={
 						imgsrc: "",
 						musicsrc: ""
@@ -57,8 +54,12 @@
 							list.imgsrc=data.data.tracks[index].album.picUrl
 							list.musicsrc="https://v1.itooi.cn/netease/url?id="+data.data.tracks[index].id +"&quality=flac";
 						musicarr.push(list);
+						songid.push(data.data.tracks[index].id)
 					}//data是服务器返回的数据
 				musicpictures()	
+				musicname()
+				 musicplay.src=musicarr[i].musicsrc;
+				 if(!data){alert("获取歌单失败")}
 				},//成功时的回调函数
 					error:function(){
 						alert("出错了")
@@ -72,11 +73,9 @@
 			var musicred;
 			var musicblue;
 			var musicyellow;
-			var i;
+			
 			$(".play").click(function () {
-				i=0
-				if(!musicarr){alert("请选取歌单")}
-				$("audio").prop("src",musicarr[i].musicsrc)
+				if(!musicarr[i]){alert("请选取歌单")}
 				musicplay.play();
 				musicname(musicplay);
 				autochange ();
@@ -114,11 +113,23 @@
 		
 			
 			var move =$(".move")[0]
-			$(".musicscroll").click(function (event) {
-			var timedis =event.clientX-$(".musicscroll")[0].offsetLeft;
+			$(".musicscroll").click(function () {
+					var timedis =event.pageX-$(".musicscroll")[0].offsetLeft;
 			 move.style.left  =	 timedis+"px";
 			 musicplay.currentTime= (timedis/parseInt( $(".musicscroll").css("width")))*musicplay.duration
 			})
+			$(".musicscroll").mousedown(function () {
+				$(".musicscroll").mousemove(function (event) {
+					var timedis =event.pageX-$(".musicscroll")[0].offsetLeft;
+			 move.style.left  =	 timedis+"px";
+			 musicplay.currentTime= (timedis/parseInt( $(".musicscroll").css("width")))*musicplay.duration
+				})
+				$(document).mouseup(function () {
+				$(".musicscroll").off("mousemove")
+			})
+				return false;
+			})
+			
 			//从接口获取音乐
 			function getmusic(obj){
 			}
@@ -164,9 +175,19 @@
 				$("audio").prop("src",musicarr[i].musicsrc)
 					musicplay.play();
 				}
+			
 			//当前播放歌曲名
 			function musicname(music){
-				$(".musicname").text(musicplay.src.split("/mp3/")[1])
+				$.ajax({
+					type:"get",
+					url:"https://v1.itooi.cn/netease/song",
+					async:true,
+					data:{id : songid[i]},
+					success : function(data){
+					$(".musicname").text(data.data.songs[0].name+"-"+data.data.songs[0].ar[0].name)	
+					console.log(data)
+					}
+				});
 				
 			}
 			//播放完自动切换下一首
@@ -199,7 +220,7 @@
 		<button class="pause"></button>
 		<button class="pre"></button>
 		<button class="next"></button>
-		<p class="musicname"></p>
+		<p class="musicname" style="font-size: 12px;"></p>
 		<p class="timescroll"></p>
 		<audio src="">
 		Your browser does not support the audio element.
