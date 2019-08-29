@@ -154,3 +154,12 @@
  	width: 200px;
   
   }
+  #movball{
+  	position: absolute;
+left: 1020px;
+top: 234px;
+background-color: skyblue;
+opacity: 0.5;
+width: 520px;
+height: 240px;
+  }

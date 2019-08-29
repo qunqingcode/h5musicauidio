@@ -6,6 +6,7 @@
 		<link rel="stylesheet" type="text/css" href="css/css1.css"/>
 	</head>
 	<script src="js/jquery-3.4.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/moveball.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		
 		$(function () {
@@ -64,7 +65,7 @@
 					},//失败时的回调函数
 					dataType:"json"//设置接收到的响应数据的格式
 			});
-				
+				musicplay.pause()
 				}
 			})
 			
@@ -251,6 +252,9 @@
 					
 				</div>
 				</div>
+		<div id="movball"  >
+			<canvas id="myCanvas" ></canvas>
+		</div>		
  		</div>
  			
  		
